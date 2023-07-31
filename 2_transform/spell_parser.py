@@ -81,25 +81,25 @@ if Path("spell_data.csv").is_file():
     os.remove("spell_data.csv")
 
 
-with open("spell_data.csv", "w") as csv_file:
-    csv_writer = csv.writer(csv_file)
-    out_keys = list(out_all[0].keys())
-    csv_writer.writerow(out_keys)
+# with open("spell_data.csv", "w") as csv_file:
+#     csv_writer = csv.writer(csv_file)
+#     out_keys = list(out_all[0].keys())
+#     csv_writer.writerow(out_keys)
 
 
-    for row in out_all:
-        csv_writer.writerow([
-            row["name"],
-            row["source"],
-            row["level"],
-            row["school"],
-            row["casttime"],
-            row["actiontype"],
-            row["range"], 
-            row["components"],
-            row["duration"],
-            row["spelllists"],
-            row["description"]
-        ])
+#     for row in out_all:
+#         csv_writer.writerow([
+#             row["name"],
+#             row["source"],
+#             row["level"],
+#             row["school"],
+#             row["casttime"],
+#             row["actiontype"],
+#             row["range"], 
+#             row["components"],
+#             row["duration"],
+#             row["spelllists"],
+#             row["description"]
+#         ])
 
-# csv_string = pd.read_json(out_all).to_csv('spell_data.csv', encoding='utf-8', index=False)
+pd.read_json(out_all).to_csv('spell_data.csv', encoding='utf-8', index=False)

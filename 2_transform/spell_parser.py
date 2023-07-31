@@ -60,7 +60,7 @@ for the_file in the_files:
         "school": school,
         "casttime": casttime,
         "actiontype": actiontype,
-        "range": the_range,
+        "the_range": the_range,
         "components": components,
         "duration": duration,
         "spelllists": spelllists,
@@ -81,6 +81,7 @@ if Path("spell_data.csv").is_file():
     os.remove("spell_data.csv")
 
 
+# alternative way to do it pandas is better
 # with open("spell_data.csv", "w") as csv_file:
 #     csv_writer = csv.writer(csv_file)
 #     out_keys = list(out_all[0].keys())
@@ -102,4 +103,4 @@ if Path("spell_data.csv").is_file():
 #             row["description"]
 #         ])
 
-pd.read_json(out_all).to_csv('spell_data.csv', encoding='utf-8', index=False)
+pd.read_json(out_all_str).to_csv('spell_data.csv', encoding='utf-8', index=False)

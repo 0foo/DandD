@@ -42,8 +42,11 @@ for the_file in the_files:
         the_range=subdata[1].replace("Range: ", "").strip()
         components=subdata[2].replace("Components: ", "").strip()
         duration=subdata[3].replace("Duration: ", "").strip()
-        description=data[3].text,
-        spelllists=data[4].text.replace("Spell Lists. ", "")
+        spelllists=data[-1].text.replace("Spell Lists. ", "")
+        description="" 
+        for i in data[3:-1]:
+            description = description + i.text          
+        print(description)
     except Exception as e:
         print(name)
         raise(e)
@@ -60,18 +63,20 @@ for the_file in the_files:
         "range": the_range,
         "components": components,
         "duration": duration,
-        "description": description,
-        "spelllists": spelllists
+        "spelllists": spelllists,
+        "description": description
     }
     out_all.append(out)
 
     #print(out)
 
 out_all = json.dumps(out_all)
-os.remove("spell_data.json")
+if Path("spell_data.json").is_file():
+    os.remove("spell_data.json")
 json_file = open("spell_data.json", "w")
 json_file.write(out_all)
 json_file.close()
 
-
+if Path("spell_data.csv").is_file():
+    os.remove("spell_data.csv")
 csv_string = pd.read_json(out_all).to_csv('spell_data.csv', encoding='utf-8', index=False)

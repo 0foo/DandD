@@ -1,0 +1,17 @@
+[
+    {
+        "name": "dragonborn",
+        "attributes": {
+            "ability_score_modification": {
+                "strength": "+2",
+                "charisma": "+1"
+            }
+        }
+
+
+
+    }
+
+
+
+]

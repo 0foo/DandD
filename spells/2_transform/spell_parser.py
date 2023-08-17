@@ -5,6 +5,17 @@ from pathlib import Path
 import pandas as pd
 import json, csv
 
+
+def replacer(the_string, to_replace, the_replacers):
+    the_diff = len(to_replace) - len(the_replacers)
+    if the_diff > 0:
+        new_list = the_replacers[-1] * the_diff
+        the_replacers = [*the_replacers, *new_list]
+    for i, v in enumerate(to_replace):
+        the_string = the_string.replace(v, the_replacers[i])
+    return the_string
+
+
 directory="../1_extract/dnd5e.wikidot.com"
  
 # iterate over files in
@@ -36,9 +47,13 @@ for the_file in the_files:
         else:
             level=level.group().strip()
         school=data[1].text.split()[1].strip()
+        is_ritual = False
+        if "ritual" in data[1].text:
+            is_ritual = True
         subdata=data[2].text.splitlines()
         casttime=re.search('\d+',subdata[0]).group().strip()
-        actiontype=subdata[0].split()[-1].strip()
+        action_type_list = subdata[0].split()[3:]
+        actiontype = " ".join(action_type_list).strip()
         the_range=subdata[1].replace("Range: ", "").strip()
         components=subdata[2].replace("Components: ", "").strip()
         duration=subdata[3].replace("Duration: ", "").strip()
@@ -46,18 +61,23 @@ for the_file in the_files:
         description="" 
         for i in data[3:-1]:
             description = description + i.text          
-        print(description)
+       # print(description)
     except Exception as e:
-        print(name)
+        # print(name)
         raise(e)
 
+    the_id = "SPELL" + "_" + name + "_" + level + "_" + school
+    the_id = replacer(the_id, [" ", "-"], ["_"])
+    the_id = the_id.upper()
 
     # out structure
     out = {
+        "id" : the_id,
         "name": name,
         "source": source,
         "level":level,
         "school": school,
+        "ritual": is_ritual,
         "casttime": casttime,
         "actiontype": actiontype,
         "the_range": the_range,
@@ -68,39 +88,44 @@ for the_file in the_files:
     }
     out_all.append(out)
 
-    #print(out)
-
-out_all_str = json.dumps(out_all)
-if Path("spell_data.json").is_file():
-    os.remove("spell_data.json")
-json_file = open("spell_data.json", "w")
-json_file.write(out_all_str)
-json_file.close()
 
 if Path("spell_data.csv").is_file():
     os.remove("spell_data.csv")
 
 
-# alternative way to do it pandas is better
-# with open("spell_data.csv", "w") as csv_file:
-#     csv_writer = csv.writer(csv_file)
-#     out_keys = list(out_all[0].keys())
-#     csv_writer.writerow(out_keys)
+with open("spell_data.csv", "w") as csv_file:
+    csv_writer = csv.writer(csv_file)
+    # out_keys = list(out_all[0].keys())
+    # csv_writer.writerow(out_keys)
 
 
-#     for row in out_all:
-#         csv_writer.writerow([
-#             row["name"],
-#             row["source"],
-#             row["level"],
-#             row["school"],
-#             row["casttime"],
-#             row["actiontype"],
-#             row["range"], 
-#             row["components"],
-#             row["duration"],
-#             row["spelllists"],
-#             row["description"]
-#         ])
+    for row in out_all:
+        csv_writer.writerow([
+            row["id"],
+            row["name"],
+            row["source"],
+            row["level"],
+            row["school"],
+            row["ritual"],
+            row["casttime"],
+            row["actiontype"],
+            row["the_range"], 
+            row["components"],
+            row["duration"],
+            row["spelllists"],
+            row["description"]
+        ])
 
-pd.read_json(out_all_str).to_csv('spell_data.csv', encoding='utf-8', index=False)
+
+    #print(out)
+
+# out_all_str = json.dumps(out_all)
+# if Path("spell_data.json").is_file():
+#     os.remove("spell_data.json")
+# json_file = open("spell_data.json", "w")
+# json_file.write(out_all_str)
+# json_file.close()
+
+
+# pd.read_json(out_all_str).to_csv('spell_data.csv', encoding='utf-8', index=False)
+
